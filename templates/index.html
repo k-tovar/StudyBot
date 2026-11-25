@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>StudyBot</title>
+    <style>
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        padding: 24px 16px;
+        background: #eef2f7;
+        color: #18253a;
+        font-family: system-ui, sans-serif;
+        line-height: 1.5;
+    }
+
+    .tarjeta {
+        max-width: 680px;
+        margin: 0 auto;
+        padding: clamp(20px, 5vw, 32px);
+        background: white;
+        border: 1px solid #dce4ef;
+        border-radius: 18px;
+        box-shadow: 0 8px 24px rgb(24 37 58 / 8%);
+    }
+
+    h1 {
+        margin: 0;
+        color: #194fa3;
+    }
+
+    h1 + p {
+        margin: 4px 0 20px;
+        color: #475569;
+    }
+
+    form {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px 20px;
+    }
+
+    form p {
+        margin: 0;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 4px;
+        font-weight: 600;
+    }
+
+    input {
+        width: 100%;
+        padding: 7px 10px;
+        border: 1px solid #94a3b8;
+        border-radius: 8px;
+        font: inherit;
+    }
+
+    button {
+        grid-column: 1 / -1;
+        padding: 10px 16px;
+        border: 0;
+        border-radius: 8px;
+        background: #194fa3;
+        color: white;
+        font: inherit;
+        font-weight: 700;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background: #123d80;
+    }
+
+    input:focus-visible,
+    button:focus-visible {
+        outline: 3px solid #3b82f6;
+        outline-offset: 2px;
+    }
+
+    [role="status"],
+    [role="alert"] {
+        margin: 16px 0 0;
+        padding: 10px 14px;
+        border-radius: 8px;
+    }
+
+    .apto {
+        background: #dcfce7;
+        color: #166534;
+    }
+
+    .no-apto,
+    [role="alert"] {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    @media (max-width: 480px) {
+        form {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+</head>
+<body>
+    <main class="tarjeta">
+    <h1>StudyBot</h1>
+    <p>Ingresa 0 o 1 en cada campo con la misma codificación del dataset.</p>
+
+    <form method="post">
+        {% for columna in columnas %}
+            <p>
+                <label for="{{ columna }}">
+                    {{ columna.replace('_', ' ') | capitalize }}
+                </label>
+                <input
+                    id="{{ columna }}"
+                    name="{{ columna }}"
+                    type="number"
+                    min="0"
+                    max="1"
+                    step="1"
+                    value="{{ entradas.get(columna, '') }}"
+                    required
+                >
+            </p>
+        {% endfor %}
+        <button type="submit">Predecir</button>
+    </form>
+
+    {% if error %}
+        <p role="alert">{{ error }}</p>
+    {% endif %}
+
+    {% if resultado is not none %}
+        <p role="status" class="{{ 'apto' if resultado == 'APTO' else 'no-apto' }}">
+            Predicción: <strong>{{ resultado }}</strong>
+        </p>
+    {% endif %}
+    </main>
+</body>
+</html>
